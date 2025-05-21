@@ -68,3 +68,9 @@ Pull requests and feature ideas are welcome! Feel free to open an issue or fork 
 
 This project is open-source and available under the MIT License.
 
+#⚠️ Disclaimer & Usage
+#This notebook is provided for educational and research purposes only.
+#Commercial use, redistribution, or direct reproduction without permission is not allowed.
+#Please cite the source or provide attribution if referencing this work in your own project.
+
+
