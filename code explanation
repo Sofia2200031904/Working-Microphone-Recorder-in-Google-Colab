@@ -1,0 +1,105 @@
+📌 Overview
+Colab notebooks run in a cloud environment that doesn't have access to local hardware (e.g. microphone).
+However, browsers do have access to microphones.
+So, we use JavaScript to capture audio in the browser.
+Once the recording is done, we send the data back to Python using a callback function.
+Finally, we save the data as a .wav file and can play it using IPython tools.
+
+✅ Full Code with Description
+
+✅ 1. Import Required Libraries
+
+from IPython.display import Audio, display, Javascript
+from base64 import b64decode
+import io
+import numpy as np
+import scipy.io.wavfile
+Audio, display, Javascript: Tools to run and display audio/JS in Colab.
+
+b64decode: Decodes base64-encoded audio.
+
+numpy, scipy.io.wavfile: Used for working with and saving audio data.
+
+✅ 2. Define the record(sec) Function
+
+def record(sec=5):
+    display(Javascript("""
+Defines a function to record audio for a specified number of seconds.
+
+Embeds and executes JavaScript inside the Colab notebook.
+
+✅ 3. JavaScript: Sleep Function
+
+const sleep = time => new Promise(resolve => setTimeout(resolve, time))
+Defines an asynchronous sleep function that pauses for the given time in ms.
+
+✅ 4. JavaScript: Convert Blob to Base64
+
+const b2text = blob => new Promise(resolve => {
+    const reader = new FileReader()
+    reader.onloadend = () => resolve(reader.result)
+    reader.readAsDataURL(blob)
+})
+Converts the audio data (Blob) to a base64 string using a FileReader.
+
+✅ 5. JavaScript: Record Audio from Microphone
+
+const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+Requests access to your microphone.
+
+✅ 6. Create and Start MediaRecorder
+
+const recorder = new MediaRecorder(stream)
+const data = []
+recorder.ondataavailable = event => data.push(event.data)
+recorder.start()
+Initializes a MediaRecorder to capture audio.
+
+Listens for audio data and pushes chunks into data.
+
+✅ 7. Stop Recording After Specified Time
+
+await sleep(sec * 1000)
+recorder.stop()
+Waits for the given number of seconds (sec) before stopping recording.
+
+✅ 8. Wait for Recorder to Stop
+
+await new Promise(resolve => recorder.onstop = resolve)
+Waits until the recording is fully stopped.
+
+✅ 9. Convert Audio and Send to Python
+
+const blob = new Blob(data)
+const b64data = await b2text(blob)
+google.colab.kernel.invokeFunction('notebook.save_audio', [b64data], {})
+Combines chunks into one Blob.
+
+Converts it to base64.
+
+Sends it to the Python callback function save_audio.
+
+✅ 10. Python: Receive and Save Audio
+
+def save_audio(data):
+    header, b64 = data.split(',', 1)
+    audio = b64decode(b64)
+    with open('recorded.wav', 'wb') as f:
+        f.write(audio)
+Receives the base64 string.
+
+Decodes it.
+
+Saves it as recorded.wav.
+
+✅ 11. Display Audio Player in Notebook
+
+    print("Saved audio to 'recorded.wav'")
+    display(Audio('recorded.wav'))
+Shows confirmation and provides an audio player to play the recorded sound.
+
+✅ 12. Register the Callback
+
+from google.colab import output
+output.register_callback('notebook.save_audio', save_audio)
+Registers the Python function save_audio to be called from JavaScript.
