@@ -44,7 +44,7 @@ pip install numpy scipy
 ![demo\_gif](demo.gif) *(You can add a screen recording if available)*
 
 
-# Start a 5-second recording
+Start a 5-second recording
 record(5)
 
 📌 Use Cases
